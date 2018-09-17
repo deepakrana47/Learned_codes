@@ -15,50 +15,18 @@ class SimpleRNN:
         D = self.D
         M = self.M
         V = self.V
-        self.f = activation
 
         # initial weights
         We = init_weight(V, D)
         Wx = init_weight(D, M)
         Wh = init_weight(M, M)
         bh = np.zeros(M)
+        z = np.ones(M)
         Wo = init_weight(M, V)
         bo = np.zeros(V)
         h0 = np.zeros(M)
 
-        self.We = theano.shared(We)
-        self.Wx = theano.shared(Wx)
-        self.Wh = theano.shared(Wh)
-        self.bh = theano.shared(bh)
-        self.Wo = theano.shared(Wo)
-        self.bo = theano.shared(bo)
-        self.h0 = theano.shared(h0)
-        self.params = [self.We, self.Wx, self.Wh, self.bh, self.Wo, self.bo, self.h0]
-
-        thX = T.ivector('X')
-        Ei = self.We[thX] # TxD
-        thY = T.ivector('Y')
-
-        # sentence input:
-        # [START, w1, w2, ..., wn]
-        # sentence target:
-        # [w1,    w2, w3, ..., END]
-
-        def recurrent(x_t, h_t1):
-            # return h(t), y(t)
-            h_t = self.f(x_t.dot(self.Wx) + h_t1.dot(self.Wh) + self.bh)
-            y_t = T.nnet.softmax(h_t.dot(self.Wo) + self.bo)
-            return h_t, y_t
-
-        [h, y], _ = theano.scan(
-            fn=recurrent,
-            outputs_info=[self.h0, None],
-            sequences=Ei,
-            n_steps=Ei.shape[0],
-        )
-
-        py_x = y[:,0,:]
-        prediction = T.argmax(py_x, axis=1)
+        thX, thY, py_x, prediction = self.set(We, Wx, Wh, bh, z, Wo, bo, h0, activation)
 
         cost = -T.mean(T.log(py_x[T.arange(thY.shape[0]), thY]))
         grads = T.grad(cost, self.params)
@@ -70,27 +38,28 @@ class SimpleRNN:
                       (dp, mu * dp - learning_rate * g) for dp, g in zip(dparams, grads)
                   ]
 
-        self.predict_op = theano.function(
-            inputs=[thX],
-            outputs=prediction
-        )
         self.train_op = theano.function(
             inputs=[thX, thY],
-            outputs=[cost, prediction, y],
+            outputs=[cost, prediction],
             updates=updates,
         )
 
         costs = []
-        n_total = sum((len(sentence)+1) for sentence in X)
         for i in range(epochs):
             X = shuffle(X)
             n_correct = 0
+            n_total = 0
             cost = 0
             for j in range(N):
-                input_seq = [0] + X[j]
-                output_Seq = X[j] + [1]
+                if np.random.random() < .1:
+                    input_seq = [0] + X[j]
+                    output_Seq = X[j] + [1]
+                else:
+                    input_seq = [0] + X[j][:-1]
+                    output_Seq = X[j]
 
-                c, p, rout = self.train_op(input_seq, output_Seq)
+                n_total += len(output_Seq)
+                c, p= self.train_op(input_seq, output_Seq)
                 cost += c
                 for pj, xj in zip(p, output_Seq):
                     if pj == xj:
@@ -114,25 +83,27 @@ class SimpleRNN:
         Wx = npz['arr_1']
         Wh = npz['arr_2']
         bh = npz['arr_3']
-        Wo = npz['arr_4']
-        bo = npz['arr_5']
-        h0 = npz['arr_6']
+        z = npz['arr_4']
+        Wo = npz['arr_5']
+        bo = npz['arr_6']
+        h0 = npz['arr_7']
         V, D = We.shape
         _, M = Wx.shape
         rnn = SimpleRNN(D, M, V)
-        rnn.set(We, Wx, Wh, bh, Wo, bo, h0, activation)
+        rnn.set(We, Wx, Wh, bh, z, Wo, bo, h0, activation)
         return rnn
 
-    def set(self, We, Wx, Wh, bh, Wo, bo, h0, activation):
+    def set(self, We, Wx, Wh, bh, z, Wo, bo, h0, activation):
         self.f = activation
         self.We = theano.shared(We)
         self.Wx = theano.shared(Wx)
         self.Wh = theano.shared(Wh)
         self.bh = theano.shared(bh)
+        self.z = theano.shared(z)
         self.Wo = theano.shared(Wo)
         self.bo = theano.shared(bo)
         self.h0 = theano.shared(h0)
-        self.params = [self.We, self.Wx, self.Wh, self.bh, self.Wo, self.bo, self.h0]
+        self.params = [self.We, self.Wx, self.Wh, self.bh, self.z, self.Wo, self.bo, self.h0]
 
         thX = T.ivector('X')
         Ei = self.We[thX] # TxD
@@ -140,7 +111,8 @@ class SimpleRNN:
 
         def recurrent(x_t, h_t1):
             # return h(t), y(t)
-            h_t = self.f(x_t.dot(self.Wx) + h_t1.dot(self.Wh) + self.bh)
+            hhat_t = self.f(x_t.dot(self.Wx) + h_t1.dot(self.Wh) + self.bh)
+            h_t = (1 - self.z)*h_t1 + self.z * hhat_t
             y_t = T.nnet.softmax(h_t.dot(self.Wo) + self.bo)
             return h_t, y_t
 
@@ -155,43 +127,52 @@ class SimpleRNN:
         prediction = T.argmax(py_x, axis=1)
         self.predict_op = theano.function(
             inputs=[thX],
-            outputs=[py_x, prediction],
+            outputs=prediction,
             allow_input_downcast=True,
         )
+        return thX, thY, py_x, prediction
 
-    def generate(self, word2idx):
+    def generate(self, pi, word2idx):
         idx2word = {v:k for k,v in word2idx.items()}
-        V = len(word2idx)
+        V = len(pi)
 
         n_lines = 0
 
-        X = [0]
+        X = [np.random.choice(V, p=pi) ]
+        print(idx2word[X[0]], end=' ')
+
         while n_lines < 4:
-            py_x, _ = self.predict_op(X)[-1]
-            py_x = py_x[-1].flatten()
-            p = [np.random.choice(V, p=py_x)]
+            P = self.predict_op(X)[-1]
             X += [P]
 
-            P= p[-1]
             if P > 1:
                 word = idx2word[P]
                 print(word, end=' ')
             elif P == 1:
                 n_lines += 1
-                X=[0]
                 print('')
+                if n_lines < 4:
+                    X = [np.random.choice(V, p=pi)]
+                    print(idx2word[X[0]], end=' ')
 
 def train_poetry():
     sentences, word2idx = get_robert_frost()
     rnn = SimpleRNN(30, 30, len(word2idx))
     rnn.fit(sentences, learning_rate=10e-5, show_fig=True, epochs=1000, activation=T.nnet.relu)
-    rnn.save("RNN_D30_M30_epochs1000_relu.npz")
+    rnn.save("RRNN_D30_M30_epochs1000_relu.npz")
 
 def generate_poetry():
     sentences, word2idx = get_robert_frost()
-    rnn = SimpleRNN.load("RNN_D30_M30_epochs400_relu.npz", activation=T.nnet.relu)
-    rnn.generate(word2idx)
+    rnn = SimpleRNN.load("RRNN_D30_M30_epochs1000_relu.npz", activation=T.nnet.relu)
+
+    V = len(word2idx)
+    pi = np.zeros(V)
+    for sentence in sentences:
+        pi[sentence[0]] += 1
+    pi/=pi.sum()
+
+    rnn.generate(pi, word2idx)
 
 if __name__ == '__main__':
-    # train_poetry()
-    generate_poetry()
+    train_poetry()
+    # generate_poetry()

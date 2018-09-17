@@ -1,4 +1,5 @@
-import numpy as np, sys, string
+import numpy as np, sys, string, os
+from nltk import pos_tag, word_tokenize
 
 def init_weight(Mi, Mo):
     return np.random.randn(Mi, Mo)/np.sqrt(Mi + Mo)
@@ -68,3 +69,43 @@ def get_robert_frost():
                 sentence.append(idx)
             sentences.append(sentence)
     return sentences, word2idx
+
+def get_tags(s):
+    tuples = pos_tag(word_tokenize(s))
+    return [y for x,y in tuples]
+
+def get_poetry_classifier_data(sample_per_class, load_cached=True, save_cached=True):
+    datafile = 'poetry_classifier_data.npz'
+    if load_cached and os.path.exists(datafile):
+        npz = np.load(datafile)
+        X = npz['arr_0']
+        Y = npz['arr_1']
+        V = int(npz['arr_2'])
+        return X, Y, V
+
+    word2idx = {}
+    current_idx = 0
+    X = []
+    Y = []
+    for fn, label in zip(('../machine_learning_examples/hmm_class/edgar_allan_poe.txt', '../machine_learning_examples/hmm_class/robert_frost.txt'), (0,1)):
+        count = 0
+        for line in open(fn):
+            line = line.strip()
+            if line:
+                # print(line)
+                tokens = get_tags(line)
+                if len(tokens) > 1:
+                    for token in tokens:
+                        if token not in word2idx:
+                            word2idx[token] = current_idx
+                            current_idx += 1
+                    sequence = np.array([word2idx[w] for w in tokens])
+                    X.append(sequence)
+                    Y.append(label)
+                    count += 1
+                    # print(count)
+                    if count >= sample_per_class:
+                        break
+    if save_cached:
+        np.save(datafile, X, Y, current_idx)
+    return X, Y, current_idx
