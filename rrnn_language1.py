@@ -21,12 +21,15 @@ class SimpleRNN:
         Wx = init_weight(D, M)
         Wh = init_weight(M, M)
         bh = np.zeros(M)
-        z = np.ones(M)
+        # z = np.ones(M)
+        Wxz = init_weight(D, M)
+        Whz = init_weight(M, M)
+        bhz = np.zeros(M)
         Wo = init_weight(M, V)
         bo = np.zeros(V)
         h0 = np.zeros(M)
 
-        thX, thY, py_x, prediction = self.set(We, Wx, Wh, bh, z, Wo, bo, h0, activation)
+        thX, thY, py_x, prediction = self.set(We, Wx, Wh, bh, Wxz, Whz, bhz, Wo, bo, h0, activation)
 
         cost = -T.mean(T.log(py_x[T.arange(thY.shape[0]), thY]))
         grads = T.grad(cost, self.params)
@@ -83,27 +86,32 @@ class SimpleRNN:
         Wx = npz['arr_1']
         Wh = npz['arr_2']
         bh = npz['arr_3']
-        z = npz['arr_4']
-        Wo = npz['arr_5']
-        bo = npz['arr_6']
-        h0 = npz['arr_7']
+        # z = npz['arr_4']
+        Wxz = npz['arr_4']
+        Whz = npz['arr_5']
+        bhz = npz['arr_6']
+        Wo = npz['arr_7']
+        bo = npz['arr_8']
+        h0 = npz['arr_9']
         V, D = We.shape
         _, M = Wx.shape
         rnn = SimpleRNN(D, M, V)
-        rnn.set(We, Wx, Wh, bh, z, Wo, bo, h0, activation)
+        rnn.set(We, Wx, Wh, bh, Wxz, Whz, bhz, Wo, bo, h0, activation)
         return rnn
 
-    def set(self, We, Wx, Wh, bh, z, Wo, bo, h0, activation):
+    def set(self, We, Wx, Wh, bh, Wxz, Whz, bhz, Wo, bo, h0, activation):
         self.f = activation
         self.We = theano.shared(We)
         self.Wx = theano.shared(Wx)
         self.Wh = theano.shared(Wh)
         self.bh = theano.shared(bh)
-        self.z = theano.shared(z)
+        self.Wxz = theano.shared(Wxz)
+        self.Whz = theano.shared(Whz)
+        self.bhz = theano.shared(bhz)
         self.Wo = theano.shared(Wo)
         self.bo = theano.shared(bo)
         self.h0 = theano.shared(h0)
-        self.params = [self.We, self.Wx, self.Wh, self.bh, self.z, self.Wo, self.bo, self.h0]
+        self.params = [self.We, self.Wx, self.Wh, self.bh, self.Wxz,self.Whz,self.bhz, self.Wo, self.bo, self.h0]
 
         thX = T.ivector('X')
         Ei = self.We[thX] # TxD
@@ -112,7 +120,8 @@ class SimpleRNN:
         def recurrent(x_t, h_t1):
             # return h(t), y(t)
             hhat_t = self.f(x_t.dot(self.Wx) + h_t1.dot(self.Wh) + self.bh)
-            h_t = (1 - self.z)*h_t1 + self.z * hhat_t
+            z_t = T.nnet.sigmoid(x_t.dot(self.Wxz) + hhat_t.dot(self.Whz) + self.bhz)
+            h_t = (1 - z_t) * h_t1 + z_t * hhat_t
             y_t = T.nnet.softmax(h_t.dot(self.Wo) + self.bo)
             return h_t, y_t
 
@@ -159,11 +168,11 @@ def train_poetry():
     sentences, word2idx = get_robert_frost()
     rnn = SimpleRNN(30, 30, len(word2idx))
     rnn.fit(sentences, learning_rate=10e-5, show_fig=True, epochs=1000, activation=T.nnet.relu)
-    rnn.save("RRNN_D30_M30_epochs1000_relu.npz")
+    rnn.save("RRNN1_D30_M30_epochs1000_relu.npz")
 
 def generate_poetry():
     sentences, word2idx = get_robert_frost()
-    rnn = SimpleRNN.load("RRNN_D30_M30_epochs1000_relu.npz", activation=T.nnet.relu)
+    rnn = SimpleRNN.load("RRNN1_D30_M30_epochs1000_relu.npz", activation=T.nnet.relu)
 
     V = len(word2idx)
     pi = np.zeros(V)

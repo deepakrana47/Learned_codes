@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8b259879-e68a-4c1e-8c79-779e1ab830fc" name="Default Changelist" comment="&quot;self implemetation of mlp&#10;&quot;">
-      <change afterPath="$PROJECT_DIR$/poetry_classifier.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rrnn_language.py" afterDir="false" />
+    <list default="true" id="8b259879-e68a-4c1e-8c79-779e1ab830fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/srn_language.py" beforeDir="false" afterPath="$PROJECT_DIR$/srn_language.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rrnn_language1.py" beforeDir="false" afterPath="$PROJECT_DIR$/rrnn_language1.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,25 +25,25 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="427" />
-          <entry key="py" value="12018" />
-          <entry key="txt" value="140" />
+          <entry key="Python Console" value="495" />
+          <entry key="py" value="12183" />
+          <entry key="txt" value="179" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="140" />
-          <entry key="Python" value="12445" />
+          <entry key="PLAIN_TEXT" value="179" />
+          <entry key="Python" value="12678" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="41" />
+          <entry key="py" value="44" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="41" />
+          <entry key="Python" value="44" />
         </counts>
       </usages-collector>
     </session>
@@ -85,17 +82,35 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rrnn_language.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="826">
-              <caret line="71" column="20" lean-forward="true" selection-start-line="71" selection-start-column="20" selection-end-line="71" selection-end-column="20" />
+            <state relative-caret-position="469">
+              <caret line="50" column="23" selection-start-line="50" selection-start-column="23" selection-end-line="50" selection-end-column="23" />
               <folding>
                 <element signature="e#1932#2061#0" />
                 <element signature="e#2064#2174#0" />
                 <element signature="e#3239#3296#0" />
                 <element signature="e#3605#3991#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/rrnn_language1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="293">
+              <caret line="162" column="31" selection-start-line="162" selection-start-column="31" selection-end-line="162" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/matplotlib/backend_bases.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="208">
+              <caret line="207" selection-start-line="207" selection-end-line="207" />
             </state>
           </provider>
         </entry>
@@ -136,24 +151,6 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/theano/gof/type.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="419" selection-start-line="419" selection-end-line="419" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/theano/tensor/type.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="351" selection-start-line="351" selection-end-line="351" />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -169,10 +166,14 @@
       <find>\n        #</find>
       <find>sentence</find>
       <find>learning_rate</find>
+      <find>30</find>
+      <find>50</find>
     </findStrings>
     <replaceStrings>
       <replace />
       <replace>lr</replace>
+      <replace>50</replace>
+      <replace>30</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -197,12 +198,13 @@
         <option value="$PROJECT_DIR$/poetry_classifier.py" />
         <option value="$PROJECT_DIR$/rrnn_language.py" />
         <option value="$PROJECT_DIR$/srn_language.py" />
+        <option value="$PROJECT_DIR$/rrnn_language1.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="1366" />
-    <option name="width" value="908" />
+    <option name="width" value="971" />
     <option name="height" value="1078" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -233,7 +235,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.srn_language">
+  <component name="RunManager" selected="Python.rrnn_language1">
     <configuration name="poetry_classifier (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Learned_codes" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -297,6 +299,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="rrnn_language1" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Learned_codes" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/rrnn_language1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="srn_language" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Learned_codes" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -318,41 +341,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="srn_parity" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Learned_codes" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/srn_parity.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.srn_language" />
       <item itemvalue="Python.poetry_classifier" />
-      <item itemvalue="Python.srn_parity" />
       <item itemvalue="Python.poetry_classifier (1)" />
       <item itemvalue="Python.rrnn_language" />
+      <item itemvalue="Python.rrnn_language1" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.srn_language" />
+        <item itemvalue="Python.rrnn_language1" />
         <item itemvalue="Python.rrnn_language" />
+        <item itemvalue="Python.srn_language" />
         <item itemvalue="Python.poetry_classifier" />
         <item itemvalue="Python.poetry_classifier (1)" />
-        <item itemvalue="Python.srn_parity" />
       </list>
     </recent_temporary>
   </component>
@@ -395,12 +397,18 @@
       <option name="project" value="LOCAL" />
       <updated>1536659508351</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="&quot;poetry generation using rrnn&quot;">
+      <created>1537175097529</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1537175097529</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1366" y="0" width="908" height="1078" extended-state="0" />
-    <editor active="true" />
+    <frame x="1366" y="0" width="971" height="1078" extended-state="0" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49878347" weight="0.2492163" />
       <window_info id="Structure" order="1" sideWeight="0.50364965" side_tool="true" weight="0.3299373" />
@@ -410,7 +418,7 @@
       <window_info id="DB Browser" order="5" sideWeight="0.49635038" weight="0.32881355" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4449761" visible="true" weight="0.2892741" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.3343882" visible="true" weight="0.43661973" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4984326" weight="0.35427952" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -420,7 +428,7 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.3809524" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5015674" side_tool="true" weight="0.42857143" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32993197" />
-      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.5550239" side_tool="true" weight="0.42553192" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.6656118" side_tool="true" weight="0.2892741" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -460,7 +468,8 @@
     <MESSAGE value="&quot;srn_parity added explainatory comment for advance index&quot;" />
     <MESSAGE value="&quot;function implementation in theano&quot;" />
     <MESSAGE value="&quot;self implemetation of mlp&#10;&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;self implemetation of mlp&#10;&quot;" />
+    <MESSAGE value="&quot;poetry generation using rrnn&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;poetry generation using rrnn&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -750,13 +759,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/numpy/lib/npyio.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3879">
-          <caret line="383" selection-start-line="383" selection-end-line="383" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/theano/tensor/var.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="179">
@@ -779,14 +781,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/rrnn_language.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="826">
-          <caret line="71" column="20" lean-forward="true" selection-start-line="71" selection-start-column="20" selection-end-line="71" selection-end-column="20" />
+        <state relative-caret-position="469">
+          <caret line="50" column="23" selection-start-line="50" selection-start-column="23" selection-end-line="50" selection-end-column="23" />
           <folding>
             <element signature="e#1932#2061#0" />
             <element signature="e#2064#2174#0" />
             <element signature="e#3239#3296#0" />
             <element signature="e#3605#3991#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/matplotlib/backend_bases.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="207" selection-start-line="207" selection-end-line="207" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../rnnenv/lib/python3.6/site-packages/numpy/lib/npyio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="254" selection-start-line="254" selection-end-line="254" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rrnn_language1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="293">
+          <caret line="162" column="31" selection-start-line="162" selection-start-column="31" selection-end-line="162" selection-end-column="31" />
         </state>
       </provider>
     </entry>
