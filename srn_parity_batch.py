@@ -3,14 +3,16 @@ import theano
 import theano.tensor as T
 import matplotlib.pyplot as plt
 
-from util import init_weight, all_parity_pairs
+from util import init_weight, all_parity_pairs_with_sequence_labels
 from sklearn.utils import shuffle
+
 
 class SimpleRNN:
     def __init__(self, M):
         self.M = M
 
-    def fit(self, X, Y, learning_rate=10e-1, mu=.99, reg=1.0, activation=T.tanh, batch_sz=100, epochs=100, show_fig=False):
+    def fit(self, X, Y, learning_rate=10e-1, mu=.99, reg=1.0, activation=T.tanh, batch_sz=100, epochs=100,
+            show_fig=False):
         D = X[0].shape[1]
         K = len(set(Y.flatten()))
         N = len(Y)
@@ -22,7 +24,7 @@ class SimpleRNN:
         Wh = init_weight(M, M)
         bh = np.zeros(M)
         h0 = np.zeros(M)
-        Wo = init_weight(M,K)
+        Wo = init_weight(M, K)
         bo = np.zeros(K)
 
         self.Wx = theano.shared(Wx)
@@ -35,21 +37,30 @@ class SimpleRNN:
 
         thX = T.fmatrix('X')
         thY = T.ivector('Y')
+        thStartPoints = T.ivector('startPoints')
 
-        def recurrent(x_t, h_t1):
+        XW = thX.dot(self.Wx)
+
+        def recurrence(xw_t, is_start, h_t1, h0):
             # return h(t), y(t)
-            h_t = self.f(x_t.dot(self.Wx) + h_t1.dot(self.Wh) + self.bh)
-            y_t = T.nnet.softmax(h_t.dot(self.Wo) + self.bo)
-            return h_t, y_t
+            h_t = T.switch(
+                T.eq(is_start, 1),
+                self.f(xw_t + h0.dot(self.Wh) + self.bh),
+                self.f(xw_t + h_t1.dot(self.Wh) + self.bh)
+            )
+            return h_t
 
-        [h, y], _ = theano.scan(
-            fn=recurrent,
-            sequences=thX,
-            outputs_info=[self.h0, None],
-            n_steps=thX.shape[0]
+        h, _ = theano.scan(
+            fn=recurrence,
+            outputs_info=[self.h0],
+            sequences=[XW, thStartPoints],
+            non_sequences=[self.h0],
+            n_steps=XW.shape[0],
+            # mode="DebugMode"
         )
 
-        py_x = y[:, 0, :]
+        # py_x = y[:, 0, :]
+        py_x = T.nnet.softmax(h.dot(self.Wo) + self.bo)
         prediction = T.argmax(py_x, axis=1)
 
         ## Notes
@@ -75,26 +86,37 @@ class SimpleRNN:
             (dp, mu*dp - learning_rate*g) for dp, g in zip(dparams, grads)
         ]
 
-        self.predict_op = theano.function(inputs=[thX], outputs=prediction)
+        # self.predict_op = theano.function(inputs=[thX], outputs=prediction)
         self.train_op = theano.function(
-            inputs=[thX, thY],
-            outputs=[cost, prediction, y],
-            updates=updates,
+            inputs=[thX, thY, thStartPoints],
+            outputs=[cost, prediction, py_x],
+            updates=updates
+            # mode="DebugMode"
         )
 
         costs = []
+        n_batches = N // batch_sz
+        sequenceLength = X.shape[1]
 
+        startPoints = np.zeros(sequenceLength*batch_sz, dtype=np.int32)
+        for b in range(batch_sz):
+            startPoints[b*sequenceLength] = 1
         for i in range(epochs):
             X, Y = shuffle(X, Y)
             n_correct = 0
             cost = 0
-            for j in range(N):
-                c, p, rout = self.train_op(X[j], Y[j])
+            for j in range(n_batches):
+                Xbatch = X[j*batch_sz:(j+1)*batch_sz].reshape(sequenceLength*batch_sz, D)
+                Ybatch = Y[j*batch_sz:(j+1)*batch_sz].reshape(sequenceLength*batch_sz).astype(np.int32)
+                c, p, rout = self.train_op(Xbatch, Ybatch, startPoints)
                 cost += c
-                if p[-1] == Y[j,-1]:
-                    n_correct += 1
+
+                for b in range(batch_sz):
+                    idx = sequenceLength*(b + 1) - 1
+                    if p[idx] == Ybatch[idx]:
+                        n_correct += 1
             print("shape y:", rout.shape)
-            print("i:", i, "cost:", cost, "Classification rate:", (float(n_correct)/N))
+            print("i:", i, "cost:", cost, "Classification rate:", (float(n_correct) / N))
             costs.append(cost)
             # if n_correct == N:
             #     break
@@ -102,23 +124,19 @@ class SimpleRNN:
             plt.plot(costs)
             plt.show()
 
-def parity(B=12, learning_rate=10e-4, epoch=100):
-    X, Y = all_parity_pairs(B)
-    N, t = X.shape
 
-    Y_t = np.zeros(X.shape, dtype=np.int32)
-    for n in range(N):
-        one_count = 0
-        for i in range(t):
-            if X[n, i] == 1:
-                one_count += 1
-            if one_count % 2 == 1:
-                Y_t[n, i] = 1
-
-    X = X.reshape(N, t, 1).astype(np.float32)
+def parity(B=12, learning_rate=1e-3, epochs=100):
+    X, Y = all_parity_pairs_with_sequence_labels(B)
 
     rnn = SimpleRNN(4)
-    rnn.fit(X, Y_t, learning_rate=learning_rate, epochs=epoch, activation=T.nnet.sigmoid, show_fig=True)
+    rnn.fit(X, Y,
+        batch_sz=10,
+        learning_rate=learning_rate,
+        epochs=epochs,
+        activation=T.nnet.sigmoid,
+        show_fig=False
+    )
+
 
 if __name__ == '__main__':
     parity()
